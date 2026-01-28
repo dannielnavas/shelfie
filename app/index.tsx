@@ -1,12 +1,14 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { useAuth } from "@/context/auth-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import * as LocalAuthentication from "expo-local-authentication";
-import { router } from "expo-router";
+import { Redirect, router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useState } from "react";
 import {
+    ActivityIndicator,
     Alert,
     KeyboardAvoidingView,
     Platform,
@@ -27,6 +29,8 @@ export default function App() {
   const [biometricAvailable, setBiometricAvailable] = useState(false);
   const [hasBiometric, setHasBiometric] = useState(false);
   const [userData, setUserData] = useState<any>(null);
+  
+  const { isAuthenticated, isLoading: authLoading, signIn } = useAuth();
 
   // Colores del tema
   const background = useThemeColor({}, "background");
@@ -46,10 +50,6 @@ export default function App() {
 
   const isFormValid = email.length > 0 && password.length > 0;
 
-  const handleLogin = async () => {
-    await fetchLogin({ email: email.toLowerCase(), password });
-  };
-
   const fetchLogin = async ({
     email,
     password,
@@ -58,6 +58,7 @@ export default function App() {
     password: string;
   }) => {
     try {
+      setIsLoading(true);
       const response = await fetch(
         "https://milibro-danniel-dev.vercel.app/auth/login",
         {
@@ -74,7 +75,9 @@ export default function App() {
       }
 
       const data = await response.json();
-      await SecureStore.setItemAsync("token", data.access_token);
+      
+      // Usar el contexto de autenticación para guardar el token
+      await signIn(data.access_token);
 
       await SecureStore.setItemAsync(
         "dataUser",
@@ -95,6 +98,10 @@ export default function App() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleLogin = async () => {
+    await fetchLogin({ email: email.toLowerCase(), password });
   };
 
   const checkBiometricAvailability = async () => {
@@ -142,6 +149,20 @@ export default function App() {
     };
     checkSavedCredentials();
   }, [biometricAvailable]);
+
+  // Mostrar loading mientras se verifica la autenticación
+  if (authLoading) {
+    return (
+      <View style={[styles.container, { backgroundColor: background, justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={primary} />
+      </View>
+    );
+  }
+
+  // Redirigir si ya está autenticado
+  if (isAuthenticated) {
+    return <Redirect href="/(tabs)" />;
+  }
 
   return (
     <KeyboardAvoidingView
