@@ -3,51 +3,138 @@
  * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
  */
 
-import { Platform } from 'react-native';
+import { Platform } from "react-native";
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+const tintColorLight = "#30046D";
+const tintColorDark = "#8B5CF6";
 
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#fff',
+    // Texto - Jerarquía visual (WCAG AA compliant)
+    text: "#0F172A", // Texto principal - máximo contraste
+    textSecondary: "#475569", // Texto secundario
+    textTertiary: "#64748B", // Texto terciario/muted
+    textInverse: "#FFFFFF", // Texto sobre fondos oscuros
+
+    // Fondos - Jerarquía de superficies
+    background: "#F8FAFC", // Fondo principal
+    surface: "#FFFFFF", // Superficie elevada (cards, modals)
+    surfaceSecondary: "#F1F5F9", // Superficie secundaria
+    overlay: "rgba(15, 4, 109, 0.5)", // Overlay para modals/dialogs
+
+    // Bordes y divisores
+    border: "#E2E8F0", // Borde estándar
+    borderFocus: "#30046D", // Borde en focus
+    divider: "#E2E8F0", // Divisor entre elementos
+
+    // Primary - Color principal basado en #30046D
+    primary: "#30046D", // Primary base
+    primaryLight: "#4C1A8A", // Primary hover
+    primaryDark: "#1F0338", // Primary active/pressed
+    primaryMuted: "#E8E0F5", // Primary background suave
+    onPrimary: "#FFFFFF", // Texto sobre primary
+
+    // Estados interactivos
+    hover: "rgba(48, 4, 109, 0.08)", // Hover state
+    active: "rgba(48, 4, 109, 0.12)", // Active/pressed state
+    disabled: "#CBD5E1", // Elemento deshabilitado
+    disabledText: "#94A3B8", // Texto deshabilitado
+
+    // Colores semánticos
+    success: "#16A34A",
+    successLight: "#DCFCE7",
+    onSuccess: "#FFFFFF",
+    warning: "#D97706",
+    warningLight: "#FEF3C7",
+    onWarning: "#FFFFFF",
+    danger: "#DC2626",
+    dangerLight: "#FEE2E2",
+    onDanger: "#FFFFFF",
+    info: "#2563EB",
+    infoLight: "#DBEAFE",
+    onInfo: "#FFFFFF",
+
+    // Compat template
     tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
+    icon: "#64748B",
+    tabIconDefault: "#94A3B8",
     tabIconSelected: tintColorLight,
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
+    // Texto - Jerarquía visual (WCAG AA compliant)
+    text: "#F1F5F9", // Texto principal
+    textSecondary: "#CBD5E1", // Texto secundario
+    textTertiary: "#94A3B8", // Texto terciario/muted
+    textInverse: "#0F172A", // Texto sobre fondos claros
+
+    // Fondos - Jerarquía de superficies
+    background: "#0F0B1A", // Fondo principal
+    surface: "#1A0F2E", // Superficie elevada (cards, modals)
+    surfaceSecondary: "#24193D", // Superficie secundaria
+    overlay: "rgba(0, 0, 0, 0.7)", // Overlay para modals/dialogs
+
+    // Bordes y divisores
+    border: "#2D1B3D", // Borde estándar
+    borderFocus: "#8B5CF6", // Borde en focus
+    divider: "#2D1B3D", // Divisor entre elementos
+
+    // Primary - Color principal basado en #30046D
+    primary: "#8B5CF6", // Primary base (más claro para contraste)
+    primaryLight: "#A78BFA", // Primary hover
+    primaryDark: "#7C3AED", // Primary active/pressed
+    primaryMuted: "rgba(139, 92, 246, 0.15)", // Primary background suave
+    onPrimary: "#FFFFFF", // Texto sobre primary
+
+    // Estados interactivos
+    hover: "rgba(139, 92, 246, 0.12)", // Hover state
+    active: "rgba(139, 92, 246, 0.20)", // Active/pressed state
+    disabled: "#374151", // Elemento deshabilitado
+    disabledText: "#6B7280", // Texto deshabilitado
+
+    // Colores semánticos
+    success: "#22C55E",
+    successLight: "rgba(34, 197, 94, 0.15)",
+    onSuccess: "#FFFFFF",
+    warning: "#F59E0B",
+    warningLight: "rgba(245, 158, 11, 0.15)",
+    onWarning: "#FFFFFF",
+    danger: "#F87171",
+    dangerLight: "rgba(248, 113, 113, 0.15)",
+    onDanger: "#FFFFFF",
+    info: "#60A5FA",
+    infoLight: "rgba(96, 165, 250, 0.15)",
+    onInfo: "#FFFFFF",
+
+    // Compat template
     tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
+    icon: "#9BA1A6",
+    tabIconDefault: "#9BA1A6",
     tabIconSelected: tintColorDark,
   },
-};
+} as const;
 
 export const Fonts = Platform.select({
   ios: {
     /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
+    sans: "system-ui",
     /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
+    serif: "ui-serif",
     /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
+    rounded: "ui-rounded",
     /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
+    mono: "ui-monospace",
   },
   default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
+    sans: "normal",
+    serif: "serif",
+    rounded: "normal",
+    mono: "monospace",
   },
   web: {
     sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
     serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
+    rounded:
+      "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
     mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
   },
 });
