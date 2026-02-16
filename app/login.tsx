@@ -1,10 +1,13 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { api } from "@/constants/api";
+import { useAuth } from "@/context/auth-context";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { router } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import React, { useState } from "react";
 import {
+    ActivityIndicator,
     Alert,
     KeyboardAvoidingView,
     Platform,
@@ -19,54 +22,68 @@ import {
 
 const CORAL = "#E07C5C";
 
-export default function Register() {
-  const [name, setName] = useState("");
-  const [username, setUsername] = useState("");
+export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const { signIn } = useAuth();
   const background = useThemeColor({}, "background");
   const text = useThemeColor({}, "text");
   const textSecondary = useThemeColor({}, "textSecondary");
   const textTertiary = useThemeColor({}, "textTertiary");
   const border = useThemeColor({}, "border");
-  const danger = useThemeColor({}, "danger");
 
-  const isFormValid =
-    name.length > 0 && email.length > 0 && password.length > 0;
+  const isFormValid = email.length > 0 && password.length > 0;
 
-  const handleRegister = async () => {
-    setIsLoading(true);
+  const fetchLogin = async ({
+    email: e,
+    password: p,
+  }: {
+    email: string;
+    password: string;
+  }) => {
     try {
-      const response = await fetch(api.auth.register, {
+      setIsLoading(true);
+      const response = await fetch(api.auth.login, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: name.trim() || username.trim(),
-          email: email.toLowerCase(),
-          password,
-        }),
+        body: JSON.stringify({ email: e, password: p }),
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Error al registrar");
+      const data = await response.json();
+      if (!response.ok)
+        throw new Error(data.message || "Credenciales inválidas");
+      await signIn(data.accessToken);
+      if (response.ok) {
+        const userResponse = await fetch(api.user.me, {
+          headers: { Authorization: `Bearer ${data.accessToken}` },
+        });
+        const userData = await userResponse.json();
+        await SecureStore.setItemAsync("dataUser", JSON.stringify(userData));
+        console.log("userData", userData);
       }
-
-      ToastAndroid.show("¡Cuenta creada exitosamente!", ToastAndroid.SHORT);
-      router.replace("/login");
-    } catch (err: unknown) {
+      ToastAndroid.show("¡Bienvenido!", ToastAndroid.SHORT);
+      router.replace("/(tabs)");
+    } catch (error) {
+      console.log("error", error instanceof TypeError);
+      const isNetworkError =
+        error instanceof TypeError &&
+        (error as Error).message === "Network request failed";
       Alert.alert(
-        "Error de registro",
-        err instanceof Error
-          ? err.message
-          : "Verifica tus datos e intenta de nuevo",
+        "Error de inicio de sesión",
+        isNetworkError
+          ? "No se pudo conectar al servidor. Revisa que el backend esté corriendo y que la IP en constants/api.ts sea la de tu computadora en la misma red WiFi."
+          : (error as Error).message ||
+              "Por favor verifica tus credenciales e intenta nuevamente",
       );
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleLogin = async () => {
+    await fetchLogin({ email: email.toLowerCase(), password });
   };
 
   return (
@@ -91,44 +108,8 @@ export default function Register() {
             </View>
           </View>
 
-          {/* Form - 4 campos como en Figma */}
+          {/* Campos */}
           <ThemedView style={styles.form}>
-            <ThemedView style={styles.inputContainer}>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: background,
-                    borderColor: border,
-                    color: text,
-                  },
-                ]}
-                placeholder="Full name"
-                placeholderTextColor={textTertiary}
-                value={name}
-                onChangeText={setName}
-                autoCapitalize="words"
-                autoComplete="name"
-              />
-            </ThemedView>
-            {/* <ThemedView style={styles.inputContainer}>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: background,
-                    borderColor: border,
-                    color: text,
-                  },
-                ]}
-                placeholder="Username"
-                placeholderTextColor={textTertiary}
-                value={username}
-                onChangeText={setUsername}
-                autoCapitalize="none"
-                autoComplete="username"
-              />
-            </ThemedView> */}
             <ThemedView style={styles.inputContainer}>
               <TextInput
                 style={[
@@ -165,7 +146,7 @@ export default function Register() {
                   onChangeText={setPassword}
                   secureTextEntry={!isPasswordVisible}
                   autoCapitalize="none"
-                  autoComplete="new-password"
+                  autoComplete="password"
                 />
                 <TouchableOpacity
                   onPress={() => setIsPasswordVisible(!isPasswordVisible)}
@@ -182,33 +163,27 @@ export default function Register() {
 
             <TouchableOpacity
               style={[
-                styles.registerButton,
-                {
-                  backgroundColor:
-                    isFormValid && !isLoading ? CORAL : "#CBD5E1",
-                },
+                styles.loginButton,
+                { backgroundColor: isFormValid ? CORAL : "#CBD5E1" },
               ]}
-              onPress={handleRegister}
+              onPress={handleLogin}
               disabled={!isFormValid || isLoading}
               activeOpacity={0.8}
             >
-              <ThemedText
-                style={[
-                  styles.registerButtonText,
-                  { color: isFormValid && !isLoading ? "#FFFFFF" : "#94A3B8" },
-                ]}
-              >
-                {isLoading ? "Creating account..." : "Create Account"}
-              </ThemedText>
+              {isLoading ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <ThemedText style={styles.loginButtonText}>Log In</ThemedText>
+              )}
             </TouchableOpacity>
 
-            <View style={styles.loginRow}>
-              <ThemedText style={[styles.loginText, { color: textSecondary }]}>
-                Already have an account?{" "}
+            <View style={styles.signUpRow}>
+              <ThemedText style={[styles.signUpText, { color: textSecondary }]}>
+                Don&apos;t have an account yet?{" "}
               </ThemedText>
-              <Pressable onPress={() => router.back()}>
-                <ThemedText style={[styles.loginLink, { color: CORAL }]}>
-                  Log in here
+              <Pressable onPress={() => router.push("/register")}>
+                <ThemedText style={[styles.signUpLink, { color: CORAL }]}>
+                  Sign up here
                 </ThemedText>
               </Pressable>
             </View>
@@ -274,21 +249,25 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   eyeButtonText: { fontSize: 20 },
-  registerButton: {
+  loginButton: {
     height: 52,
     borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
     marginTop: 8,
   },
-  registerButtonText: { fontSize: 16, fontWeight: "600" },
-  loginRow: {
+  loginButtonText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#FFFFFF",
+  },
+  signUpRow: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     flexWrap: "wrap",
     marginTop: 24,
   },
-  loginText: { fontSize: 14 },
-  loginLink: { fontSize: 14, fontWeight: "600" },
+  signUpText: { fontSize: 14 },
+  signUpLink: { fontSize: 14, fontWeight: "600" },
 });

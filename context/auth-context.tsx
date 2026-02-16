@@ -20,6 +20,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const checkAuth = async () => {
     try {
       const storedToken = await SecureStore.getItemAsync("token");
+      console.log("storedToken", storedToken);
       if (storedToken) {
         setToken(storedToken);
         setIsAuthenticated(true);

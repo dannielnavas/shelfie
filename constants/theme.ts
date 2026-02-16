@@ -5,7 +5,14 @@
 
 import { Platform } from "react-native";
 
-const tintColorLight = "#30046D";
+/** Paleta base del diseño (milibroapp) */
+export const Palette = {
+  black: "#000000",
+  white: "#FFFFFF",
+  primary: "#30046D",
+} as const;
+
+const tintColorLight = Palette.primary;
 const tintColorDark = "#8B5CF6";
 
 export const Colors = {
@@ -14,25 +21,25 @@ export const Colors = {
     text: "#0F172A", // Texto principal - máximo contraste
     textSecondary: "#475569", // Texto secundario
     textTertiary: "#64748B", // Texto terciario/muted
-    textInverse: "#FFFFFF", // Texto sobre fondos oscuros
+    textInverse: Palette.white, // Texto sobre fondos oscuros
 
     // Fondos - Jerarquía de superficies
     background: "#F8FAFC", // Fondo principal
-    surface: "#FFFFFF", // Superficie elevada (cards, modals)
+    surface: Palette.white, // Superficie elevada (cards, modals)
     surfaceSecondary: "#F1F5F9", // Superficie secundaria
     overlay: "rgba(15, 4, 109, 0.5)", // Overlay para modals/dialogs
 
     // Bordes y divisores
     border: "#E2E8F0", // Borde estándar
-    borderFocus: "#30046D", // Borde en focus
+    borderFocus: Palette.primary, // Borde en focus
     divider: "#E2E8F0", // Divisor entre elementos
 
-    // Primary - Color principal basado en #30046D
-    primary: "#30046D", // Primary base
+    // Primary - Color principal (paleta milibroapp)
+    primary: Palette.primary, // Primary base
     primaryLight: "#4C1A8A", // Primary hover
     primaryDark: "#1F0338", // Primary active/pressed
     primaryMuted: "#E8E0F5", // Primary background suave
-    onPrimary: "#FFFFFF", // Texto sobre primary
+    onPrimary: Palette.white, // Texto sobre primary
 
     // Estados interactivos
     hover: "rgba(48, 4, 109, 0.08)", // Hover state
@@ -43,16 +50,20 @@ export const Colors = {
     // Colores semánticos
     success: "#16A34A",
     successLight: "#DCFCE7",
-    onSuccess: "#FFFFFF",
+    onSuccess: Palette.white,
     warning: "#D97706",
     warningLight: "#FEF3C7",
-    onWarning: "#FFFFFF",
+    onWarning: Palette.white,
     danger: "#DC2626",
     dangerLight: "#FEE2E2",
-    onDanger: "#FFFFFF",
+    onDanger: Palette.white,
     info: "#2563EB",
     infoLight: "#DBEAFE",
-    onInfo: "#FFFFFF",
+    onInfo: Palette.white,
+
+    // ALPHA Bookstore - coral
+    coral: "#E07C5C",
+    coralDark: "#C96A4A",
 
     // Compat template
     tint: tintColorLight,
@@ -83,7 +94,7 @@ export const Colors = {
     primaryLight: "#A78BFA", // Primary hover
     primaryDark: "#7C3AED", // Primary active/pressed
     primaryMuted: "rgba(139, 92, 246, 0.15)", // Primary background suave
-    onPrimary: "#FFFFFF", // Texto sobre primary
+    onPrimary: Palette.white, // Texto sobre primary
 
     // Estados interactivos
     hover: "rgba(139, 92, 246, 0.12)", // Hover state
@@ -94,16 +105,20 @@ export const Colors = {
     // Colores semánticos
     success: "#22C55E",
     successLight: "rgba(34, 197, 94, 0.15)",
-    onSuccess: "#FFFFFF",
+    onSuccess: Palette.white,
     warning: "#F59E0B",
     warningLight: "rgba(245, 158, 11, 0.15)",
-    onWarning: "#FFFFFF",
+    onWarning: Palette.white,
     danger: "#F87171",
     dangerLight: "rgba(248, 113, 113, 0.15)",
-    onDanger: "#FFFFFF",
+    onDanger: Palette.white,
     info: "#60A5FA",
     infoLight: "rgba(96, 165, 250, 0.15)",
-    onInfo: "#FFFFFF",
+    onInfo: Palette.white,
+
+    // ALPHA Bookstore - coral
+    coral: "#E07C5C",
+    coralDark: "#C96A4A",
 
     // Compat template
     tint: tintColorDark,
